@@ -2,6 +2,7 @@ package opengl.engine;
 
 import opengl.entities.Camera;
 import opengl.entities.Entity;
+import opengl.entities.Light;
 import opengl.model.RawModel;
 import opengl.model.TexturedModel;
 import opengl.shader.StaticShader;
@@ -16,6 +17,8 @@ import java.nio.*;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11C.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11C.glEnable;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -24,6 +27,7 @@ public class RenderEngine {
     // The window handle
     private long window;
     private Camera camera;
+    private Entity entity;
 
 
     public static void main(String[] args) {
@@ -70,6 +74,7 @@ public class RenderEngine {
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
 
             camera.move(key);
+            entity.move(key);
         });
 
         glfwSetCursorPosCallback(window, (window, x, y) -> {
@@ -112,44 +117,31 @@ public class RenderEngine {
         // bindings available for use.
         GL.createCapabilities();
 
+        glEnable(GL_DEPTH_TEST);
+
 
         Loader loader = new Loader();
         StaticShader staticShader = new StaticShader();
         Renderer renderer = new Renderer(staticShader);
 
-        float vertices[] = {
-                -0.5f, 0.5f, 0f,
-                -0.5f, -0.5f, 0f,
-                0.5f, -0.5f, 0f,
-                0.5f, 0.5f, 0f
-        };
 
-        int indices[] = {
-                0,1,3,
-                3,1,2
-        };
-
-        float textCoords[] = {
-                0,0,
-                0,1,
-                1,1,
-                1,0
-        };
-
-        RawModel model = loader.loadToVao(vertices, textCoords, indices);
-        ModelTexture texture = new ModelTexture(loader.loadTexture("src/main/resources/texture/tree.png"));
+        RawModel model = OBJLoader.loadObjModel("src/main/resources/dragon/dragon.obj", loader);
+        ModelTexture texture = new ModelTexture(loader.loadTexture("src/main/resources/dragon/white.png"));
         TexturedModel texturedModel = new TexturedModel(model, texture);
 
-        Entity entity = new Entity(texturedModel, new Vector3f(0, 0, -1), 0, 0, 0, 1);
+        entity = new Entity(texturedModel, new Vector3f(0, 0, -25), 0, 0, 0, 1);
+
+        Light light = new Light(new Vector3f(-10,10,-20), new Vector3f(1,1,1));
 
         camera = new Camera();
 
-        entity.increasePosition(0, 0, -1f);
+        entity.increasePosition(0, -5, 0);
         while (!glfwWindowShouldClose(window)) {
-            entity.increaseRotation(0, 0, 0.02f);
+//            entity.increaseRotation(0, 0.01f, 0);
 
             renderer.prepare();
             staticShader.start();
+            staticShader.loadLight(light);
             staticShader.loadViewMatrix(camera);
             renderer.render(entity, staticShader);
             staticShader.stop();
@@ -167,3 +159,84 @@ public class RenderEngine {
     }
 
 }
+
+
+
+// textured cube
+//float[] vertices = {
+//        -0.5f,0.5f,-0.5f,
+//        -0.5f,-0.5f,-0.5f,
+//        0.5f,-0.5f,-0.5f,
+//        0.5f,0.5f,-0.5f,
+//
+//        -0.5f,0.5f,0.5f,
+//        -0.5f,-0.5f,0.5f,
+//        0.5f,-0.5f,0.5f,
+//        0.5f,0.5f,0.5f,
+//
+//        0.5f,0.5f,-0.5f,
+//        0.5f,-0.5f,-0.5f,
+//        0.5f,-0.5f,0.5f,
+//        0.5f,0.5f,0.5f,
+//
+//        -0.5f,0.5f,-0.5f,
+//        -0.5f,-0.5f,-0.5f,
+//        -0.5f,-0.5f,0.5f,
+//        -0.5f,0.5f,0.5f,
+//
+//        -0.5f,0.5f,0.5f,
+//        -0.5f,0.5f,-0.5f,
+//        0.5f,0.5f,-0.5f,
+//        0.5f,0.5f,0.5f,
+//
+//        -0.5f,-0.5f,0.5f,
+//        -0.5f,-0.5f,-0.5f,
+//        0.5f,-0.5f,-0.5f,
+//        0.5f,-0.5f,0.5f
+//
+//};
+//
+//    float[] textureCoords = {
+//            0,0,
+//            0,1,
+//            1,1,
+//            1,0,
+//            0,0,
+//            0,1,
+//            1,1,
+//            1,0,
+//            0,0,
+//            0,1,
+//            1,1,
+//            1,0,
+//            0,0,
+//            0,1,
+//            1,1,
+//            1,0,
+//            0,0,
+//            0,1,
+//            1,1,
+//            1,0,
+//            0,0,
+//            0,1,
+//            1,1,
+//            1,0
+//
+//
+//    };
+//
+//    int[] indices = {
+//            0,1,3,
+//            3,1,2,
+//            4,5,7,
+//            7,5,6,
+//            8,9,11,
+//            11,9,10,
+//            12,13,15,
+//            15,13,14,
+//            16,17,19,
+//            19,17,18,
+//            20,21,23,
+//            23,21,22
+//
+//    };

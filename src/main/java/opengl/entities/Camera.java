@@ -22,8 +22,10 @@ public class Camera {
         switch (key) {
             case GLFW_KEY_S: position.z += 0.02f; break;
             case GLFW_KEY_W: position.z -= 0.02f; break;
-            case GLFW_KEY_D: position.x += 0.02f; break;
-            case GLFW_KEY_A: position.x -= 0.02f; break;
+            case GLFW_KEY_D: position.x -= 0.02f; break;
+            case GLFW_KEY_A: position.x += 0.02f; break;
+            case GLFW_KEY_PAGE_UP: position.y -= 0.02f; break;
+            case GLFW_KEY_PAGE_DOWN: position.y += 0.02f; break;
         }
     }
 

@@ -3,6 +3,8 @@ package opengl.entities;
 import opengl.model.TexturedModel;
 import org.joml.Vector3f;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 public class Entity {
 
     private TexturedModel model;
@@ -29,6 +31,15 @@ public class Entity {
         rotX += dx;
         rotY += dy;
         rotZ += dz;
+    }
+
+    public void move(int key) {
+        switch (key) {
+            case GLFW_KEY_UP: rotX += 0.02f; break;
+            case GLFW_KEY_DOWN: rotX -= 0.02f; break;
+            case GLFW_KEY_RIGHT: rotZ += 0.02f; break;
+            case GLFW_KEY_LEFT: rotZ -= 0.02f; break;
+        }
     }
 
     public void increaseScale(float scaling) {
